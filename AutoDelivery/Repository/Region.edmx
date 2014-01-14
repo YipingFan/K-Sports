@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="KSportsModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="KSportsModelStoreContainer">
+          <EntitySet Name="Region" EntityType="KSportsModel.Store.Region" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="RegionPostcode" EntityType="KSportsModel.Store.RegionPostcode" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_DeliveryRegion_Zone" Association="KSportsModel.Store.FK_DeliveryRegion_Zone">
+            <End Role="Region" EntitySet="Region" />
+            <End Role="RegionPostcode" EntitySet="RegionPostcode" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Region">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="200" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="RegionPostcode">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ZoneId" Type="int" Nullable="false" />
+          <Property Name="FromPostCode" Type="int" Nullable="false" />
+          <Property Name="ToPostCode" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="200" />
+        </EntityType>
+        <Association Name="FK_DeliveryRegion_Zone">
+          <End Role="Region" Type="KSportsModel.Store.Region" Multiplicity="1" />
+          <End Role="RegionPostcode" Type="KSportsModel.Store.RegionPostcode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Region">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RegionPostcode">
+              <PropertyRef Name="ZoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="KSportsModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="KSportsEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="Regions" EntityType="KSportsModel.Region" />
+          <EntitySet Name="RegionPostcodes" EntityType="KSportsModel.RegionPostcode" />
+          <AssociationSet Name="FK_DeliveryRegion_Zone" Association="KSportsModel.FK_DeliveryRegion_Zone">
+            <End Role="Region" EntitySet="Regions" />
+            <End Role="RegionPostcode" EntitySet="RegionPostcodes" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Region">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="City" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="RegionPostcodes" Relationship="KSportsModel.FK_DeliveryRegion_Zone" FromRole="Region" ToRole="RegionPostcode" />
+        </EntityType>
+        <EntityType Name="RegionPostcode">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="ZoneId" Type="Int32" Nullable="false" />
+          <Property Name="FromPostCode" Type="Int32" Nullable="false" />
+          <Property Name="ToPostCode" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="200" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Region" Relationship="KSportsModel.FK_DeliveryRegion_Zone" FromRole="RegionPostcode" ToRole="Region" />
+        </EntityType>
+        <Association Name="FK_DeliveryRegion_Zone">
+          <End Role="Region" Type="KSportsModel.Region" Multiplicity="1" />
+          <End Role="RegionPostcode" Type="KSportsModel.RegionPostcode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Region">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RegionPostcode">
+              <PropertyRef Name="ZoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="KSportsModelStoreContainer" CdmEntityContainer="KSportsEntities">
+          <EntitySetMapping Name="Regions">
+            <EntityTypeMapping TypeName="KSportsModel.Region">
+              <MappingFragment StoreEntitySet="Region">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="City" ColumnName="City" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RegionPostcodes">
+            <EntityTypeMapping TypeName="KSportsModel.RegionPostcode">
+              <MappingFragment StoreEntitySet="RegionPostcode">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ZoneId" ColumnName="ZoneId" />
+                <ScalarProperty Name="FromPostCode" ColumnName="FromPostCode" />
+                <ScalarProperty Name="ToPostCode" ColumnName="ToPostCode" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

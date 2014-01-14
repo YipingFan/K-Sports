@@ -1,0 +1,43 @@
+﻿@using AutoDelivery.Models
+
+@model IList<ValidatedOrder>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <ul>
+        @foreach (var o in Model)
+        {
+            <li>
+                @o.Order.Address
+                @if (o.GoogleAddresses == null || o.GoogleAddresses.Count != 1)
+                {
+                    <text>----Invalid Address</text>
+                }
+                else
+                {
+                    @: ----- 
+                    if (o.Region != null)
+                    {
+                        var name = o.Region.Name;
+                        @name
+                    }
+                    else
+                    {
+                        @:Can't find delivery region for this address
+                    }
+                }
+            </li>
+        }
+    </ul>
+    @using (Html.BeginForm("Direction", "File", FormMethod.Post))
+    {
+        <select id="regionId" name="regionId">
+            @foreach(var r in Model.Where( m => m.Region!=null).Select(m => m.Region).Distinct().ToList())
+            {
+                <option value="@r.Id.ToString()">@r.Name</option>
+            }
+        </select>
+        <input type="submit" name="submit" value="Plan Route" />
+    }

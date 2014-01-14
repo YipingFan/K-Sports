@@ -1,0 +1,102 @@
+﻿@using AutoDelivery.Models
+
+@model IList<ValidatedOrder>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="http://maps.google.com.au/maps/api/js?sensor=false"></script>
+
+<div id="map-canvas" style="width: 480px; height: 400px; float: left;"></div>
+<div id="control_panel" style="width: 400px; height: 400px; float: left;">
+    <div style="margin: 10px; border-width: 2px;">
+        <b>Start:</b>
+        <select id="start">
+            <option value="31/20 Tucks Road Seven Hills NSW 2147 Australia">Seven Hills</option>
+        </select>
+        <input type="submit" onclick="calcRoute();" value="Plan Route">
+        <br>
+        <i>(Ctrl-Click for multiple selection)</i>
+        <br>
+        <select multiple id="waypoints" style="height: 300px;">
+            @foreach (ValidatedOrder o in Model)
+            {
+                <option value="@o.GoogleAddresses.First()" selected="selected">@o.GoogleAddresses.First()</option>
+            }
+        </select>
+        <br>
+        <b>End:</b>
+        <select id="end">
+            <option value="31/20 Tucks Road Seven Hills NSW 2147 Australia">Seven Hills</option>
+        </select>
+        <br>
+    </div>
+</div>
+<div style="clear: both" />
+
+<div id="directions_panel" style="width: 900px; background-color: #FFEECC"></div>
+
+<script>
+    var directionsService = new google.maps.DirectionsService();
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+    var sydney = new google.maps.LatLng(-33.860723, 151.207523);
+    var map = new google.maps.Map(document.getElementById('map-canvas'), {
+        zoom: 12,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        center: sydney
+    });
+
+    directionsDisplay.setMap(map);
+
+    function calcRoute() {
+        var start = document.getElementById('start').value;
+        var end = document.getElementById('end').value;
+        var waypts = [];
+        var checkboxArray = document.getElementById('waypoints');
+        for (var i = 0; i < checkboxArray.length; i++) {
+            if (checkboxArray.options[i].selected == true) {
+                waypts.push({
+                    location: checkboxArray[i].value,
+                    stopover: true
+                });
+            }
+        }
+
+        var request = {
+            origin: start,
+            destination: end,
+            waypoints: waypts,
+            optimizeWaypoints: true,
+            travelMode: google.maps.TravelMode.DRIVING
+        };
+        directionsService.route(request, function (response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(response);
+                var route = response.routes[0];
+                var summaryPanel = document.getElementById('directions_panel');
+
+
+                var totalDistance = 0;
+                var totalDuration = 0;
+
+                // For each route, display summary information.
+                for (var i = 0; i < route.legs.length; i++) {
+                    var routeSegment = i + 1;
+                    summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment + '</b><br/>';
+                    summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+                    summaryPanel.innerHTML += route.legs[i].end_address + ' ';
+                    summaryPanel.innerHTML += route.legs[i].distance.text + ' ';
+                    summaryPanel.innerHTML += route.legs[i].duration.text + '<br/>';
+
+                    totalDistance += route.legs[i].distance.value;
+                    totalDuration += route.legs[i].duration.value;
+                }
+
+                //summaryPanel.innerHTML += "<b>Total distance: <br/>" + route.distance + "<br/>";
+                //summaryPanel.innerHTML += "<b>Total time: <br/>" + route.duration + "<br/>";
+            }
+        });
+    }
+
+</script>
